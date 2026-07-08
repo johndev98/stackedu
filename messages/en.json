@@ -1,0 +1,9 @@
+
+{
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "blog": "Blog",
+    "startLearning" : "Start Learning"
+  }
+}
