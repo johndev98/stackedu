@@ -21,7 +21,6 @@ type CourseDetailLabels = {
   back: string;
   students: string;
   lessons: string;
-  duration: string;
   price: string;
   continue: string;
   lessonsTitle: string;
@@ -196,12 +195,6 @@ export function CourseDetailView({
                     <BookOpen className="h-4 w-4 text-amber-600" />
                     <span>
                       {course.lessons} {labels.lessons}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-4 w-4 text-amber-600" />
-                    <span>
-                      {course.duration} {labels.duration}
                     </span>
                   </div>
                 </div>

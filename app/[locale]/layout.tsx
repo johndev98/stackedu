@@ -30,7 +30,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={cn("h-full antialiased", geistSans.variable, geistMono.variable, inter.variable, "font-sans")}
+      className={cn("h-full antialiased", geistSans.variable, geistMono.variable, inter.variable, "font-sans", )}
     >
       {/* ✅ BODY BÂY GIỜ TRONG SUỐT, KHÔNG MÀU NỀN CỨNG NỮA */}
       {/* Mỗi layout con sẽ tự quyết định màu nền của chính nó */}

@@ -34,7 +34,6 @@ export default async function CourseDetailPage({
         back: t("detail.back"),
         students: t("cardCourse.students"),
         lessons: t("detail.lessons"),
-        duration: t("detail.duration"),
         price: t("detail.price"),
         continue: t("detail.continue"),
         lessonsTitle: t("detail.lessonsTitle"),

@@ -7,7 +7,7 @@ export default async function MyCoursesPage() {
   const t = await getTranslations("learn.mycourses");
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-6 md:p-8 ">
       <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
         {t("title") || "My Courses"}
       </h1>
