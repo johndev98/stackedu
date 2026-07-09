@@ -1,9 +1,15 @@
-
 {
   "nav": {
     "home": "Home",
     "courses": "Courses",
     "blog": "Blog",
-    "startLearning" : "Start Learning"
+    "startLearning": "Start Learning"
+  },
+  "learn": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "my-courses": "My Course",
+      "community": "Community"
+    }
   }
 }

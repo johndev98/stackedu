@@ -53,9 +53,9 @@ export default async function RootLayout({
         inter.variable,
       )}
     >
-      <body className="min-h-full ">
+      <body className="min-h-full bg-[#D9A956] ">
         <NextIntlClientProvider messages={messages}>
-          <div className="mx-auto flex min-h-screen w-full px-8 max-w-screen-2xl flex-col ">
+          <div className="mx-auto flex min-h-screen w-full px-8 max-w-screen-3xl flex-col  ">
             {children}
           </div>
         </NextIntlClientProvider>

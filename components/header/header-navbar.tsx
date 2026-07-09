@@ -53,7 +53,6 @@ export function HeaderNavbar() {
       <div className="flex gap-5">
         <AnimatedThemeToggler />
         <LanguageSwitcher />
-
         <Link href="/learn">
           <RainbowButton variant="outline">{t("startLearning")}</RainbowButton>
         </Link>
