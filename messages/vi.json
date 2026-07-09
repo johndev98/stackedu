@@ -6,11 +6,17 @@
     "startLearning": "Học ngay"
   },
   "learn": {
-  "sidebar": {
-    "dashboard": "Tổng quan",
-    "my-courses": "Khóa học",
-    "community": "Cộng đồng"
+    "sidebar": {
+      "dashboard": "Tổng quan",
+      "my-courses": "Khóa học",
+      "community": "Cộng đồng"
+    },
+    "mycourses": {
+      "title": "Khóa học",
+      "cardCourse": {
+        "btnLearn": "Học ngay",
+        "students": "Học viên"
+      }
+    }
   }
-}
-
 }
