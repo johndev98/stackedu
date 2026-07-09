@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { AppPathnames } from "@/i18n/routing";
+import type { StaticAppPathnames } from "@/i18n/routing";
 import {
   LayoutDashboard,
   MessageCircleHeart,
@@ -8,7 +8,7 @@ import {
 
 export type LearnNavItem = {
   key: string;
-  href: AppPathnames;
+  href: StaticAppPathnames;
   icon: LucideIcon;
 };
 

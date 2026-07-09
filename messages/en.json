@@ -16,6 +16,19 @@
       "cardCourse": {
         "btnLearn": "Learn",
         "students": "Students"
+      },
+      "detail": {
+        "back": "Back to courses",
+        "lessons": "lessons",
+        "lessonsTitle": "Course content",
+        "lessonCompleted": "Completed",
+        "lessonLocked": "Locked",
+        "backToOverview": "Back to course overview",
+        "progress": "{completed}/{total} lessons completed",
+        "currentLesson": "In progress",
+        "duration": "total duration",
+        "price": "Course price",
+        "continue": "Continue learning"
       }
     }
   }

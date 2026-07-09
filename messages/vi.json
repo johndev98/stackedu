@@ -16,6 +16,19 @@
       "cardCourse": {
         "btnLearn": "Học ngay",
         "students": "Học viên"
+      },
+      "detail": {
+        "back": "Quay lại khóa học",
+        "lessons": "bài học",
+        "lessonsTitle": "Nội dung khóa học",
+        "lessonCompleted": "Đã hoàn thành",
+        "lessonLocked": "Chưa mở khóa",
+        "backToOverview": "Quay lại thông tin khóa học",
+        "progress": "{completed}/{total} bài đã hoàn thành",
+        "currentLesson": "Đang học",
+        "duration": "tổng thời lượng",
+        "price": "Giá khóa học",
+        "continue": "Tiếp tục học"
       }
     }
   }

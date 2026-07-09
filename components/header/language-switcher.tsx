@@ -4,6 +4,7 @@ import { LOCALES } from "@/constants/locales";
 
 import { Icon } from "@iconify/react";
 import { useLocale } from "next-intl";
+import { useParams } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -17,7 +18,22 @@ export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
   const currentLocale = LOCALES.find((item) => item.code === locale);
+
+  const routeParams = Object.fromEntries(
+    Object.entries(params).filter(([key]) => key !== "locale"),
+  );
+
+  const switchLocale = (nextLocale: string) => {
+    router.replace(
+      // @ts-expect-error -- pathname and params always match the current route
+      Object.keys(routeParams).length > 0
+        ? { pathname, params: routeParams }
+        : { pathname },
+      { locale: nextLocale },
+    );
+  };
 
   return (
     <DropdownMenu>
@@ -36,11 +52,7 @@ export function LanguageSwitcher() {
         {LOCALES.map((item) => (
           <DropdownMenuItem
             key={item.code}
-            onClick={() =>
-              router.replace(pathname, {
-                locale: item.code,
-              })
-            }
+            onClick={() => switchLocale(item.code)}
           >
             <Icon icon={item.icon} className="mr-2 h-5 w-5" />
 
