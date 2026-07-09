@@ -1,5 +1,3 @@
-//app/[locale]/layout.tsx
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "../globals.css";
@@ -10,16 +8,8 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Stack Edu",
@@ -34,30 +24,19 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
-
-  if (!routing.locales.includes(locale as any)) {
-    notFound();
-  }
-
+  if (!routing.locales.includes(locale as any)) notFound();
   const messages = await getMessages();
 
   return (
     <html
       lang={locale}
-      className={cn(
-        "h-full",
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        inter.variable,
-      )}
+      className={cn("h-full antialiased", geistSans.variable, geistMono.variable, inter.variable, "font-sans")}
     >
-      <body className="min-h-full bg-[#D9A956] ">
+      {/* ✅ BODY BÂY GIỜ TRONG SUỐT, KHÔNG MÀU NỀN CỨNG NỮA */}
+      {/* Mỗi layout con sẽ tự quyết định màu nền của chính nó */}
+      <body className="h-full bg-transparent">
         <NextIntlClientProvider messages={messages}>
-          <div className="mx-auto flex min-h-screen w-full px-8 max-w-screen-2xl flex-col">
-            {children}
-          </div>
+          {children} {/* ✅ ĐƯA THẲNG ĐI, KHÔNG BỌC GÌ THÊM */}
         </NextIntlClientProvider>
       </body>
     </html>

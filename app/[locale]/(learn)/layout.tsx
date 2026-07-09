@@ -6,12 +6,10 @@ export default function LearnLayout({
   children: React.ReactNode;
 }) {
   return (
-    // ✅ Toàn bộ cao bằng cửa sổ, KHÔNG BAO GIỜ VỠ GIAO DIỆN
-    <div className="flex h-screen w-full overflow-hidden  text-slate-900 py-2">
-      {/* ✅ Sidebar = client con → hợp lệ Next.js, cha vẫn server */}
-      <div className="flex w-full bg-[#121212] rounded-2xl">
+    <div className="h-screen w-full overflow-hidden bg-[#D9A956] p-3 text-slate-900">
+      <div className="flex h-full w-full  max-w-screen-2xl mx-auto overflow-hidden rounded-3xl bg-[#121212]">
         <LearnSidebar />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden my-3 mr-3 bg-white rounded-2xl">
+        <main className="my-3 mr-3 flex-1 overflow-y-auto overflow-x-hidden rounded-3xl bg-white">
           {children}
         </main>
       </div>
