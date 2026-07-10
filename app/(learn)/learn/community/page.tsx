@@ -1,7 +1,4 @@
-import { getTranslations } from "next-intl/server";
-
-export default async function Communitypage() {
-  const t = await getTranslations("learn.home");
+export default function CommunityPage() {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold">Community</h1>

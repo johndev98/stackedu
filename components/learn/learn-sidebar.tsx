@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, type Transition } from "framer-motion";
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
+import { LEARN_SIDEBAR_LABELS } from "@/constants/learn-copy";
 import { LEARN_MENU } from "@/constants/learn-navigation";
-import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { LanguageSwitcher } from "../header/language-switcher";
 
 const SIDEBAR_WIDE = "w-60";
 const SIDEBAR_NARROW = "w-[72px]";
@@ -26,7 +26,6 @@ const MOTION = {
 } as const;
 
 export function LearnSidebar() {
-  const t = useTranslations("learn.sidebar");
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -37,7 +36,6 @@ export function LearnSidebar() {
         collapsed ? SIDEBAR_NARROW : SIDEBAR_WIDE,
       )}
     >
-      {/* ============== TOP: LOGO + NÚT THU GỌN ============== */}
       <div>
         <div className="flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 overflow-hidden">
@@ -93,7 +91,7 @@ export function LearnSidebar() {
                     ? "text-[#1A1206]"
                     : "text-slate-300 hover:bg-white/5 hover:text-white",
                 )}
-                title={collapsed ? t(item.key) : undefined}
+                title={collapsed ? LEARN_SIDEBAR_LABELS[item.key] : undefined}
               >
                 {isActive && (
                   <motion.div
@@ -113,7 +111,7 @@ export function LearnSidebar() {
                   transition={MOTION.opacity}
                   className="relative z-10 whitespace-nowrap overflow-hidden"
                 >
-                  {t(item.key)}
+                  {LEARN_SIDEBAR_LABELS[item.key]}
                 </motion.span>
               </Link>
             );
@@ -121,48 +119,20 @@ export function LearnSidebar() {
         </nav>
       </div>
 
-      {/* ============== DƯỚI ============== */}
       <div className="border-t border-white/5 p-3">
-        <div
-          className={cn(
-            "flex",
-            collapsed
-              ? "flex-col items-center gap-3"
-              : "flex-row items-center justify-between",
-          )}
-        >
-          {/* ✅ LANGUAGE SWITCHER: order-1 khi thu gọn → lên trên cùng */}
-          <motion.div
-            layout
-            transition={MOTION.layout}
-            className={cn(collapsed ? "order-1" : "order-2")}
-          >
-            <LanguageSwitcher />
-          </motion.div>
-
-          {/* ✅ AVATAR: order-2 khi thu gọn → nằm dưới LanguageSwitcher */}
-          <div
-            className={cn(
-              "flex items-center gap-3",
-              collapsed ? "order-2" : "order-1",
-            )}
-          >
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#D9A956] text-sm font-bold text-[#1A1206]">
-              <User size={16} />
-            </div>
-
-            {/* Chữ ẩn ngay lập tức */}
-            {!collapsed && (
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">
-                  Elizabeth
-                </p>
-                <p className="truncate text-[11px] text-emerald-400">
-                  ● Active
-                </p>
-              </div>
-            )}
+        <div className="flex items-center gap-3">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#D9A956] text-sm font-bold text-[#1A1206]">
+            <User size={16} />
           </div>
+
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-white">
+                Elizabeth
+              </p>
+              <p className="truncate text-[11px] text-emerald-400">● Active</p>
+            </div>
+          )}
         </div>
       </div>
     </aside>

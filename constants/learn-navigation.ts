@@ -1,14 +1,19 @@
 import type { LucideIcon } from "lucide-react";
-import type { StaticAppPathnames } from "@/i18n/routing";
 import {
   LayoutDashboard,
   MessageCircleHeart,
   GraduationCap,
 } from "lucide-react";
+import type { LEARN_SIDEBAR_LABELS } from "@/constants/learn-copy";
+
+export type LearnRoute =
+  | "/learn"
+  | "/learn/my-courses"
+  | "/learn/community";
 
 export type LearnNavItem = {
-  key: string;
-  href: StaticAppPathnames;
+  key: keyof typeof LEARN_SIDEBAR_LABELS;
+  href: LearnRoute;
   icon: LucideIcon;
 };
 

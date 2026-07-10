@@ -1,15 +1,15 @@
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
+import { LEARN_COPY } from "@/constants/learn-copy";
 import { fakeCourses, formatPrice } from "@/lib/fake-courses";
-import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export default async function MyCoursesPage() {
-  const t = await getTranslations("learn.mycourses");
+export default function MyCoursesPage() {
+  const t = LEARN_COPY.mycourses;
 
   return (
     <div className="p-6 md:p-8 ">
       <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-        {t("title") || "My Courses"}
+        {t.title}
       </h1>
 
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -36,8 +36,7 @@ export default async function MyCoursesPage() {
 
               <div className="mt-3 flex items-center justify-between text-sm text-slate-600">
                 <span>
-                  👥 {course.students.toLocaleString()}{" "}
-                  {t("cardCourse.students")}
+                  👥 {course.students.toLocaleString()} {t.cardCourse.students}
                 </span>
                 <span className="font-medium text-amber-600">
                   {formatPrice(course.price)}
@@ -45,13 +44,10 @@ export default async function MyCoursesPage() {
               </div>
 
               <Link
-                href={{
-                  pathname: "/learn/my-courses/[slug]",
-                  params: { slug: course.slug },
-                }}
+                href={`/learn/my-courses/${course.slug}`}
                 className="mt-4 block w-full text-center bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 rounded-lg transition-colors duration-200"
               >
-                {t("cardCourse.btnLearn") || "Học ngay"}
+                {t.cardCourse.btnLearn}
               </Link>
             </div>
           </div>

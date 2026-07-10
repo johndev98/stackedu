@@ -1,0 +1,28 @@
+export const LEARN_SIDEBAR_LABELS = {
+  dashboard: "Tổng quan",
+  "my-courses": "Khóa học",
+  community: "Cộng đồng",
+} as const;
+
+export const LEARN_COPY = {
+  mycourses: {
+    title: "Khóa học",
+    cardCourse: {
+      btnLearn: "Học ngay",
+      students: "Học viên",
+    },
+    detail: {
+      back: "Quay lại khóa học",
+      lessons: "bài học",
+      lessonsTitle: "Nội dung khóa học",
+      lessonCompleted: "Đã hoàn thành",
+      lessonLocked: "Chưa mở khóa",
+      backToOverview: "Quay lại thông tin khóa học",
+      progress: (completed: number, total: number) =>
+        `${completed}/${total} bài đã hoàn thành`,
+      currentLesson: "Đang học",
+      price: "Giá khóa học",
+      continue: "Tiếp tục học",
+    },
+  },
+} as const;

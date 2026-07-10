@@ -1,10 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { LanguageSwitcher } from "./language-switcher";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link as I18nLink, usePathname } from "@/i18n/navigation";
 import { RainbowButton } from "../ui/rainbow-button";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
 
@@ -15,9 +16,9 @@ export function HeaderNavbar() {
   return (
     <header className="relative flex h-16 items-center justify-between border-b-2">
       {/* Logo */}
-      <Link href="/" className="text-2xl font-bold text-primary">
+      <I18nLink href="/" className="text-2xl font-bold text-primary">
         StackEdu
-      </Link>
+      </I18nLink>
 
       {/* Navigation center */}
       <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
@@ -26,7 +27,7 @@ export function HeaderNavbar() {
           const isActive = pathname === item.href;
 
           return (
-            <Link
+            <I18nLink
               key={item.key}
               href={item.href}
               className={`relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${
@@ -44,7 +45,7 @@ export function HeaderNavbar() {
                 <Icon size={18} />
                 <span>{t(item.key)}</span>
               </span>
-            </Link>
+            </I18nLink>
           );
         })}
       </nav>

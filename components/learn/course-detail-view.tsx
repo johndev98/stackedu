@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import type { Course } from "@/lib/fake-courses";
 import type { Lesson } from "@/lib/fake-lessons";
 import { cn } from "@/lib/utils";

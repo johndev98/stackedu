@@ -13,22 +13,6 @@ export const routing = defineRouting({
       en: "/blog",
       vi: "/bai-viet",
     },
-    "/learn": {
-      en: "/learn",
-      vi: "/hoc",
-    },
-    "/learn/my-courses": {
-      en: "/learn/my-courses",
-      vi: "/hoc/khoa-hoc",
-    },
-    "/learn/my-courses/[slug]": {
-      en: "/learn/my-courses/[slug]",
-      vi: "/hoc/khoa-hoc/[slug]",
-    },
-    "/learn/community": {
-      en: "/learn/community",
-      vi: "/hoc/cong-dong",
-    },
   },
 });
 
