@@ -3,11 +3,16 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { NAV_ITEMS } from "@/constants/navigation";
-import { LanguageSwitcher } from "./language-switcher";
+import { House, UserRound, BookOpen } from "lucide-react";
+import { LanguageSwitcher } from "../language-switcher";
 import { Link as I18nLink, usePathname } from "@/i18n/navigation";
-import { RainbowButton } from "../ui/rainbow-button";
-import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
+import { RainbowButton } from "../../ui/rainbow-button";
+
+const NAV_ITEMS = [
+  { key: "home", href: "/", icon: House },
+  { key: "courses", href: "/courses", icon: UserRound },
+  { key: "blog", href: "/blog", icon: BookOpen },
+] as const;
 
 export function HeaderNavbar() {
   const t = useTranslations("nav");
@@ -20,7 +25,7 @@ export function HeaderNavbar() {
         StackEdu
       </I18nLink>
 
-      {/* Navigation center */}
+      {/* Menu chính */}
       <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
@@ -41,6 +46,7 @@ export function HeaderNavbar() {
                   transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
                 />
               )}
+
               <span className="relative z-10 flex items-center gap-2">
                 <Icon size={18} />
                 <span>{t(item.key)}</span>
@@ -50,9 +56,8 @@ export function HeaderNavbar() {
         })}
       </nav>
 
-      {/* Right */}
+      {/* Phải */}
       <div className="flex gap-5">
-        <AnimatedThemeToggler />
         <LanguageSwitcher />
         <Link href="/learn">
           <RainbowButton variant="outline">{t("startLearning")}</RainbowButton>

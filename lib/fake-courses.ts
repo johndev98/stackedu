@@ -21,7 +21,6 @@ export const fakeCourses: Course[] = [
     description:
       "Xây dựng ứng dụng web hiện đại với React 19, Next.js App Router, Server Components và các pattern production-ready.",
     lessons: 6,
-  
   },
   {
     id: "course2",
@@ -34,7 +33,6 @@ export const fakeCourses: Course[] = [
     description:
       "Thiết kế REST API, xử lý authentication, kết nối database và triển khai backend với Node.js và Express.",
     lessons: 5,
- 
   },
   {
     id: "course3",
@@ -47,7 +45,6 @@ export const fakeCourses: Course[] = [
     description:
       "Làm chủ TypeScript từ kiểu dữ liệu cơ bản đến generics, utility types và tích hợp vào dự án React/Node.",
     lessons: 5,
-   
   },
   {
     id: "course4",
@@ -60,7 +57,6 @@ export const fakeCourses: Course[] = [
     description:
       "Thiết kế giao diện người dùng chuyên nghiệp với Figma, từ wireframe đến design system hoàn chỉnh.",
     lessons: 5,
- 
   },
 ];
 

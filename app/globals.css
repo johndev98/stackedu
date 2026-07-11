@@ -2,6 +2,16 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Ẩn biểu tượng ảnh lỗi + viền mặc định của trình duyệt */
+img {
+  color: transparent;
+}
+
+img::before,
+img::after {
+  display: none !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
