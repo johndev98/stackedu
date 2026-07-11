@@ -95,9 +95,18 @@ async function getServerTime(): Promise<number> {
     });
 
     const data = await res.json();
-
+    console.log(
+      "[Time Sync] ✅ Server API:",
+      data.datetime,
+      "=>",
+      new Date(data.datetime).toLocaleString("vi-VN"),
+    );
     return Date.parse(data.datetime);
   } catch {
+    console.warn(
+      "[Time Sync] ⚠️ API failed, fallback to local time:",
+      new Date().toLocaleString("vi-VN"),
+    );
     return Date.now();
   }
 }
@@ -368,7 +377,12 @@ export function CourseCard({ course }: Props) {
       const elapsed = performance.now() - perfStartRef.current;
 
       const now = new Date(server.getTime() + elapsed);
-
+      console.log(
+        "[Update]",
+        now.toLocaleString("vi-VN", {
+          timeZone: "Asia/Ho_Chi_Minh",
+        }),
+      );
       const newCount = getSmoothOnlineCount(course.id, course.maxOnline, now);
 
       setOnline((prev) => {
