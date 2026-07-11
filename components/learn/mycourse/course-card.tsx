@@ -38,7 +38,43 @@ const LUNCH = {
   INCREASE_START_RATIO: 0.15, // Bắt đầu tăng từ 15%
   INCREASE_END_RATIO: 0.8, // Hết giai đoạn về 80% = bình thường
 };
+const SPECIAL = {
+  // 🌙 00:00 -> 01:00 giảm dần
+  NIGHT_DEC_START: 0,
+  NIGHT_DEC_END: 60,
+  NIGHT_DEC_START_RATIO: 0.35,
+  NIGHT_DEC_END_RATIO: 0.02,
 
+  // 😴 01:00 -> 04:30 đáy
+  NIGHT_BOTTOM_START: 60,
+  NIGHT_BOTTOM_END: 4 * 60 + 30,
+  NIGHT_BOTTOM_MIN: 0,
+  NIGHT_BOTTOM_MAX: 0.03,
+
+  // 🌅 04:30 -> 07:00 tăng nhẹ
+  MORNING_START: 4 * 60 + 30,
+  MORNING_END: 7 * 60,
+  MORNING_START_RATIO: 0.05,
+  MORNING_END_RATIO: 0.4,
+
+  // 🌇 18:00 -> 18:30 giảm dần
+  EVENING_DEC_START: 18 * 60,
+  EVENING_DEC_END: 18 * 60 + 30,
+  EVENING_DEC_START_RATIO: 0.6,
+  EVENING_DEC_END_RATIO: 0.3,
+
+  // 🍽 18:30 -> 18:50 duy trì mức thấp
+  EVENING_BOTTOM_START: 18 * 60 + 30,
+  EVENING_BOTTOM_END: 18 * 60 + 50,
+  EVENING_BOTTOM_MIN: 0.25,
+  EVENING_BOTTOM_MAX: 0.35,
+
+  // 🌆 18:50 -> 19:00 tăng lại
+  EVENING_INC_START: 18 * 60 + 50,
+  EVENING_INC_END: 19 * 60,
+  EVENING_INC_START_RATIO: 0.35,
+  EVENING_INC_END_RATIO: 0.65,
+};
 // 🆕 MỚI: Cấu hình chuyển tiếp MƯỢT MÀ trong 5 phút
 const SLOT_MS = SLOT_MINUTES * 60 * 1000; // 300.000ms = 5 phút
 // Cập nhật nhỏ mỗi 2–8 giây → số tăng/giảm từ từ, không nhảy vọt
@@ -178,7 +214,109 @@ function getLunchBaseRatio(currentMinutes: number): number {
   // ❌ Ngoài khung trưa → trả về -1 = dùng logic ban ngày / đêm
   return -1;
 }
+function getSpecialTimeRatio(currentMinutes: number, r2: number): number {
+  // 🌙 00:00 -> 01:00 giảm dần
+  if (
+    currentMinutes >= SPECIAL.NIGHT_DEC_START &&
+    currentMinutes < SPECIAL.NIGHT_DEC_END
+  ) {
+    const t =
+      (currentMinutes - SPECIAL.NIGHT_DEC_START) /
+      (SPECIAL.NIGHT_DEC_END - SPECIAL.NIGHT_DEC_START);
 
+    const eased = 1 - Math.pow(1 - t, 2);
+
+    const noise = (r2 * 2 - 1) * 0.08;
+
+    return (
+      (SPECIAL.NIGHT_DEC_START_RATIO +
+        (SPECIAL.NIGHT_DEC_END_RATIO - SPECIAL.NIGHT_DEC_START_RATIO) * eased) *
+      (1 + noise)
+    );
+  }
+
+  // 😴 01:00 -> 04:30 đáy
+  if (
+    currentMinutes >= SPECIAL.NIGHT_BOTTOM_START &&
+    currentMinutes < SPECIAL.NIGHT_BOTTOM_END
+  ) {
+    return (
+      SPECIAL.NIGHT_BOTTOM_MIN +
+      r2 * (SPECIAL.NIGHT_BOTTOM_MAX - SPECIAL.NIGHT_BOTTOM_MIN)
+    );
+  }
+
+  // 🌅 04:30 -> 07:00 tăng dần
+  if (
+    currentMinutes >= SPECIAL.MORNING_START &&
+    currentMinutes < SPECIAL.MORNING_END
+  ) {
+    const t =
+      (currentMinutes - SPECIAL.MORNING_START) /
+      (SPECIAL.MORNING_END - SPECIAL.MORNING_START);
+
+    const eased = t * t;
+
+    const noise = (r2 * 2 - 1) * 0.08;
+
+    return (
+      (SPECIAL.MORNING_START_RATIO +
+        (SPECIAL.MORNING_END_RATIO - SPECIAL.MORNING_START_RATIO) * eased) *
+      (1 + noise)
+    );
+  }
+
+  // 🌇 18:00 -> 18:30 giảm dần
+  if (
+    currentMinutes >= SPECIAL.EVENING_DEC_START &&
+    currentMinutes < SPECIAL.EVENING_DEC_END
+  ) {
+    const t =
+      (currentMinutes - SPECIAL.EVENING_DEC_START) /
+      (SPECIAL.EVENING_DEC_END - SPECIAL.EVENING_DEC_START);
+
+    const eased = 1 - Math.pow(1 - t, 2);
+
+    const noise = (r2 * 2 - 1) * 0.06;
+
+    return (
+      (SPECIAL.EVENING_DEC_START_RATIO +
+        (SPECIAL.EVENING_DEC_END_RATIO - SPECIAL.EVENING_DEC_START_RATIO) *
+          eased) *
+      (1 + noise)
+    );
+  }
+
+  // 🍽 18:30 -> 18:50 dao động mức thấp
+  if (
+    currentMinutes >= SPECIAL.EVENING_BOTTOM_START &&
+    currentMinutes < SPECIAL.EVENING_BOTTOM_END
+  ) {
+    return (
+      SPECIAL.EVENING_BOTTOM_MIN +
+      r2 * (SPECIAL.EVENING_BOTTOM_MAX - SPECIAL.EVENING_BOTTOM_MIN)
+    );
+  }
+
+  // 🌆 18:50 -> 19:00 tăng trở lại
+  if (
+    currentMinutes >= SPECIAL.EVENING_INC_START &&
+    currentMinutes < SPECIAL.EVENING_INC_END
+  ) {
+    const t =
+      (currentMinutes - SPECIAL.EVENING_INC_START) /
+      (SPECIAL.EVENING_INC_END - SPECIAL.EVENING_INC_START);
+
+    const eased = t * t;
+
+    return (
+      SPECIAL.EVENING_INC_START_RATIO +
+      (SPECIAL.EVENING_INC_END_RATIO - SPECIAL.EVENING_INC_START_RATIO) * eased
+    );
+  }
+
+  return -1;
+}
 // 🎯 LOGIC TÍNH GIÁ TRỊ MỤC TIÊU CỦA MỖI SLOT 5 PHÚT
 function getTargetAtTime(
   courseId: string,
@@ -196,14 +334,10 @@ function getTargetAtTime(
   const r1 = hashStringToNumber(seed);
   const r2 = hashStringToNumber(seed + ":noise");
 
-  // 🕛 2️⃣ ĐÊM 23:30 → 04:30 (GIỜ VN): 1-4 người — GIỮ NGUYÊN
-  const isLateNight =
-    currentMinutes >= 23 * 60 + 30 || currentMinutes < 4 * 60 + 30;
+  const specialRatio = getSpecialTimeRatio(currentMinutes, r2);
 
-  if (isLateNight) {
-    return (
-      Math.floor(r1 * (LATE_NIGHT_MAX - LATE_NIGHT_MIN + 1)) + LATE_NIGHT_MIN
-    );
+  if (specialRatio >= 0) {
+    return Math.round(maxOnline * specialRatio);
   }
 
   // 🍱 3️⃣ GIỜ TRƯA
@@ -263,7 +397,7 @@ function getSmoothOnlineCount(
   const smooth = prevTarget + (currentTarget - prevTarget) * eased;
   const rounded = Math.round(smooth);
 
-  return Math.max(1, Math.min(rounded, maxOnline));
+  return Math.max(0, Math.min(rounded, maxOnline));
 }
 
 // ============================================================
