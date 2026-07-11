@@ -76,8 +76,8 @@ const SPECIAL = {
 // 🆕 MỚI: Cấu hình chuyển tiếp MƯỢT MÀ trong 5 phút
 const SLOT_MS = SLOT_MINUTES * 60 * 1000; // 300.000ms = 5 phút
 
-// ⏱️ Cập nhật mỗi: 10 giây, 20 giây, 30 giây, 60 giây
-const UPDATE_INTERVALS = [1_000, 3_000, 5_000];
+// ⏱️ Cập nhật mỗi: 5 giây, 10 giây, 30 giây, 60 giây
+const UPDATE_INTERVALS = [5_000, 10_000, 30_000, 60_000];
 
 function pickRandomInterval(): number {
   return UPDATE_INTERVALS[Math.floor(Math.random() * UPDATE_INTERVALS.length)];
@@ -492,9 +492,6 @@ async function syncServerTimeSingleton() {
 
   return globalFetchPromise;
 }
-
-
-
 
 export function CourseCard({ course }: Props) {
   const isFree = course.price === 0;
