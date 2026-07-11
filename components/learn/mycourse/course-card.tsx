@@ -10,12 +10,10 @@ import type { Course } from "@/lib/fake-courses";
 type Props = { course: Course };
 
 // ⚙️ CỔNG TÙY CHỈNH NHANH — GIỮ NGUYÊN 100%
-const SLOT_MINUTES = 5; // ✅ Mục tiêu đổi 1 lần mỗi 5 phút → F5 không đổi nữa
-const LATE_NIGHT_MIN = 1;
-const LATE_NIGHT_MAX = 4;
-const DAY_RATIO_MIN = 0.65;
-const DAY_RATIO_MAX = 0.95;
-const DAY_NOISE_PERCENT = 0.12;
+const SLOT_MINUTES = 5;
+const DAY_RATIO_MIN = 0.3;
+const DAY_RATIO_MAX = 0.85;
+const DAY_NOISE_PERCENT = 0.1;
 const VIETNAM_TIMEZONE = "Asia/Ho_Chi_Minh";
 
 // 🆕 MỚI: CẤU HÌNH CHI TIẾT 4 GIAI ĐOẠN GIỜ TRƯA — CHỈNH Ở ĐÂY
@@ -29,7 +27,7 @@ const LUNCH = {
   // 🥣 Giai đoạn 2: ĐÁY RẤT THẤP 11:35 → 12:55 (80 phút)
   BOTTOM_START: 11 * 60 + 35, // 11:35
   BOTTOM_END: 12 * 60 + 55, // 12:55
-  BOTTOM_RATIO_MIN: 0.03, // Tối thiểu 3% → maxOnline=45 → ~1-2 người
+  BOTTOM_RATIO_MIN: 0.0, // Tối thiểu 3% → maxOnline=45 → ~1-2 người
   BOTTOM_RATIO_MAX: 0.07, // Tối đa 7% → maxOnline=45 → ~3 người
 
   // 📈 Giai đoạn 3: TĂNG DẦN 13:05 → 13:35 (30 phút)
@@ -77,8 +75,10 @@ const SPECIAL = {
 };
 // 🆕 MỚI: Cấu hình chuyển tiếp MƯỢT MÀ trong 5 phút
 const SLOT_MS = SLOT_MINUTES * 60 * 1000; // 300.000ms = 5 phút
-// Cập nhật nhỏ mỗi 2–8 giây → số tăng/giảm từ từ, không nhảy vọt
-const UPDATE_INTERVALS = [2_000, 3_000, 5_000, 8_000];
+
+// ⏱️ Cập nhật mỗi: 10 giây, 20 giây, 30 giây, 60 giây
+const UPDATE_INTERVALS = [1_000, 3_000, 5_000];
+
 function pickRandomInterval(): number {
   return UPDATE_INTERVALS[Math.floor(Math.random() * UPDATE_INTERVALS.length)];
 }
@@ -368,12 +368,17 @@ function getTargetAtTime(
   }
 
   // ☀️ 4️⃣ BAN NGÀY BÌNH THƯỜNG (trước 11h / sau 13:35) — GIỮ NGUYÊN
-  const baseRatio = DAY_RATIO_MIN + r1 * (DAY_RATIO_MAX - DAY_RATIO_MIN);
-  const baseValue = Math.round(maxOnline * baseRatio);
-  const noise = Math.round(baseValue * (r2 * 2 - 1) * DAY_NOISE_PERCENT);
-  const result = Math.max(3, baseValue + noise);
+  const biased = Math.pow(r1, 0.55);
 
-  return Math.min(result, maxOnline);
+  const baseRatio = DAY_RATIO_MIN + biased * (DAY_RATIO_MAX - DAY_RATIO_MIN);
+  const noise = (r2 * 2 - 1) * DAY_NOISE_PERCENT; // ±5%
+
+  const finalRatio = Math.min(
+    DAY_RATIO_MAX,
+    Math.max(DAY_RATIO_MIN, baseRatio + noise),
+  );
+
+  return Math.round(maxOnline * finalRatio);
 }
 
 // 🧈 HÀM MƯỢT MÀ — GIỮ NGUYÊN 100% LOGIC NỘI SUY 5 PHÚT
@@ -457,6 +462,15 @@ async function syncServerTimeSingleton() {
       const realUtc = (data.utc as number) + networkLatency;
 
       globalOffsetMs = realUtc - tRecv;
+      // Trong syncServerTimeSingleton(), sau khi tính xong offset
+      if (process.env.NODE_ENV === "development") {
+        console.log("========== TIME SYNC ==========");
+        console.log("Server UTC ms:", data.utc);
+        console.log("Server UTC:", new Date(data.utc).toISOString());
+        console.log("Client receive:", new Date(tRecv).toISOString());
+        console.log("Offset:", globalOffsetMs, "ms");
+        console.log("===============================");
+      }
       globalReady = true;
       writeCache(globalOffsetMs);
     } catch {
@@ -479,17 +493,34 @@ async function syncServerTimeSingleton() {
   return globalFetchPromise;
 }
 
-// ============================================================
-// 🎨 COMPONENT CHÍNH — GIỮ NGUYÊN 100% GIAO DIỆN
-// ============================================================
+
+
+
 export function CourseCard({ course }: Props) {
   const isFree = course.price === 0;
   const [online, setOnline] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  // ✅ Thêm [] vào cuối → hàm chỉ tạo 1 lần duy nhất khi component mount
   const getRealNow = useCallback(() => {
-    return new Date(Date.now() + globalOffsetMs);
-  }, []);
+    const corrected = new Date(Date.now() + globalOffsetMs);
+
+    // 👉 Chỉ log khi ở môi trường dev, production tự động tắt
+    if (process.env.NODE_ENV === "development") {
+      const vn = new Intl.DateTimeFormat("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        dateStyle: "full",
+        timeStyle: "medium",
+      }).format(corrected);
+      console.log("========== CLOCK CHECK ==========");
+      console.log("Client UTC:", new Date().toISOString());
+      console.log("Corrected UTC:", corrected.toISOString());
+      console.log("Vietnam:", vn);
+      console.log("Offset:", globalOffsetMs, "ms");
+      console.log("================================");
+    }
+
+    return corrected;
+  }, []); // ✅ Mảng phụ thuộc RỖNG
 
   const [timeReady, setTimeReady] = useState(globalReady);
 
@@ -514,7 +545,25 @@ export function CourseCard({ course }: Props) {
         course.maxOnline,
         getRealNow(),
       );
-      setOnline((prev) => (prev === newCount ? prev : newCount));
+
+      setOnline((prev) => {
+        if (prev === null) return newCount;
+        if (prev === newCount) return prev;
+
+        // 60% xác suất tăng/giảm 1-4 người
+        // 40% xác suất tăng/giảm 5-9 người
+        const step =
+          Math.random() < 0.6
+            ? Math.floor(Math.random() * 4) + 1
+            : Math.floor(Math.random() * 5) + 5;
+
+        if (prev < newCount) {
+          return Math.min(prev + step, newCount);
+        }
+
+        return Math.max(prev - step, newCount);
+      });
+
       timerRef.current = setTimeout(update, pickRandomInterval());
     };
 

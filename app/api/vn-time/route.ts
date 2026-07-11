@@ -4,12 +4,14 @@ export async function GET() {
   // ✅ UTC chuẩn quốc tế, đồng bộ NTP, user KHÔNG BAO GIỜ chỉnh được
   //    Server ở Mỹ / EU / Singapore / Việt Nam → trả về CÙNG 1 giá trị
   const utcNow = Date.now();
+  // ✅ Chỉ log ở dev
+  if (process.env.NODE_ENV === "development") {
+    console.log("SERVER UTC:", new Date(utcNow).toISOString());
+  }
 
   return Response.json(
     {
       utc: utcNow,
-      // ✅ Cộng cứng 7h = giờ Việt Nam (VN không có giờ mùa hè → vĩnh viễn đúng)
-      vietnamMs: utcNow + 7 * 3600 * 1000,
     },
     {
       headers: {
