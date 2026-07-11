@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/fake-courses";
 import type { Course } from "@/lib/fake-courses";
+import { useCurrentTime } from "@/lib/contexts/time-context";
+import { logger } from "@/lib/logger";
 
 type Props = { course: Course };
 
@@ -24,9 +26,6 @@ const vnFormatter = new Intl.DateTimeFormat("en-US", {
   second: "2-digit",
   hour12: false,
 });
-
-// 🕒 API thời gian
-const TIME_API = "https://time.now/developer/api/ip";
 
 // 🥗 Khung giờ trưa
 const LUNCH = {
@@ -73,7 +72,7 @@ const SPECIAL = {
 };
 
 const SLOT_MS = SLOT_MINUTES * 60 * 1000;
-const UPDATE_INTERVALS = [5_000, 10_000, 30_000, 60_000];
+const UPDATE_INTERVALS = [10_000, 30_000, 60_000];
 
 function pickRandomInterval(): number {
   return UPDATE_INTERVALS[Math.floor(Math.random() * UPDATE_INTERVALS.length)];
@@ -86,29 +85,6 @@ function hashStringToNumber(str: string): number {
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0) / 4294967295;
-}
-
-async function getServerTime(): Promise<number> {
-  try {
-    const res = await fetch(TIME_API, {
-      cache: "no-store",
-    });
-
-    const data = await res.json();
-    console.log(
-      "[Time Sync] ✅ Server API:",
-      data.datetime,
-      "=>",
-      new Date(data.datetime).toLocaleString("vi-VN"),
-    );
-    return Date.parse(data.datetime);
-  } catch {
-    console.warn(
-      "[Time Sync] ⚠️ API failed, fallback to local time:",
-      new Date().toLocaleString("vi-VN"),
-    );
-    return Date.now();
-  }
 }
 
 // ⏱ Lấy chi tiết giờ phút theo múi giờ VN
@@ -341,49 +317,35 @@ function getSmoothOnlineCount(
 export function CourseCard({ course }: Props) {
   const isFree = course.price === 0;
   const [online, setOnline] = useState<number | null>(null);
-  const serverTimeRef = useRef<Date | null>(null);
-  const perfStartRef = useRef(0);
-  const [ready, setReady] = useState(false);
+
+  const currentTime = useCurrentTime();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    let alive = true;
-
-    const sync = async () => {
-      const serverTimestamp = await getServerTime();
-
-      if (!alive) return;
-
-      serverTimeRef.current = new Date(serverTimestamp);
-      perfStartRef.current = performance.now();
-
-      setReady(true);
-    };
-
-    sync();
-
-    const interval = setInterval(sync, 30 * 60 * 1000);
-
-    return () => {
-      alive = false;
-      clearInterval(interval);
-    };
-  }, []);
+  const currentTimeRef = useRef<Date | null>(null);
 
   useEffect(() => {
-    if (!ready) return;
+    currentTimeRef.current = currentTime;
+  }, [currentTime]);
+
+  useEffect(() => {
+    if (!currentTime) return;
+
+    logger.log(`[${course.title}] TIMER START`);
 
     const update = () => {
-      const server = serverTimeRef.current!;
-      const elapsed = performance.now() - perfStartRef.current;
+      const now = currentTimeRef.current;
+      if (!now) return;
 
-      const now = new Date(server.getTime() + elapsed);
-      console.log(
-        "[Update]",
-        now.toLocaleString("vi-VN", {
-          timeZone: "Asia/Ho_Chi_Minh",
-        }),
-      );
+      const interval = pickRandomInterval();
+
+      // Tính toán và cập nhật số lượng
       const newCount = getSmoothOnlineCount(course.id, course.maxOnline, now);
+
+      logger.log(
+        `[${course.title}] UPDATE after ${interval / 1000}s`,
+        now.toLocaleTimeString("vi-VN"),
+        "=>",
+        newCount,
+      );
 
       setOnline((prev) => {
         if (prev === null || prev === newCount) return newCount;
@@ -398,15 +360,17 @@ export function CourseCard({ course }: Props) {
           : Math.max(prev - step, newCount);
       });
 
-      timerRef.current = setTimeout(update, pickRandomInterval());
+      // Đặt lại thời gian chờ chính xác cho lần sau
+      timerRef.current = setTimeout(update, interval);
     };
 
     update();
 
     return () => {
+      logger.log(`[${course.title}] TIMER CLEANUP`);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [course.id, course.maxOnline, ready]);
+  }, [course.id, course.maxOnline, currentTime !== null]);
 
   const totalStudentsText = `${course.students.toLocaleString()} đã đăng ký`;
 
@@ -422,6 +386,7 @@ export function CourseCard({ course }: Props) {
           src={course.thumbnail}
           alt={course.title}
           fill
+          loading="eager" 
           className="object-cover z-10 animate-fade-in bg-transparent"
           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 25vw"
           onError={(e) => {
