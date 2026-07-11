@@ -362,7 +362,7 @@ function getTargetAtTime(
     }
 
     const baseValue = Math.round(maxOnline * finalRatio);
-    const result = Math.max(1, baseValue);
+    const result = Math.max(0, baseValue);
 
     return Math.min(result, maxOnline);
   }
